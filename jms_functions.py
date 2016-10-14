@@ -76,7 +76,18 @@ def configUniformDistributedQueueErrorHandling(queueName, errorQueueName, redeli
     queue.getDeliveryFailureParams().setExpirationPolicy('Redirect');
   queue.getDeliveryParamsOverrides().setRedeliveryDelay(1000)
   queue.getDeliveryFailureParams().setRedeliveryLimit(redeliveries)
-             
+
+def createUniformDistributedTopic(jmsResource, topicName, topicJndi, subDeploymentName, timeToLive=-1):
+  print "Creating uniform distributed topic: " + topicName
+  topic = jmsResource.lookupUniformDistributedTopic(topicName)
+  if topic == None:
+    topic = jmsResource.createUniformDistributedTopic(topicName)
+    topic.setJNDIName(topicJndi)
+    topic.setSubDeploymentName(subDeploymentName)
+    topic.setForwardingPolicy('Replicated')
+    topic.getDeliveryParamsOverrides().setTimeToLive(timeToLive)
+  return topic
+
 def createForeignJMSServer(serverName, moduleName, subDeploymentName, url):
   try:
     print 'Creating foreign JMS Server: ' + serverName
