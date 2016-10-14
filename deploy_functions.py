@@ -1,7 +1,15 @@
+
+def unDeployApplication(name)
+  print 'Stopping and undeploying ' + name
+  progress = stopApplication(name)i
+  progress.printStatus()
+  progress = undeploy(name)
+  progress.printStatus()
+
+
 def deployApplicaton(oldName, newName, servers, package, plan)
-  print 'Stopping and undeploying ' + oldName
-  stopApplication(oldName)
-  undeploy(oldName)
+  if oldName:
+    undeployApplication(oldName)
 
   appServers = servers.join(',')
   print 'Deploying ' + newName + ' to: ' + appServers
