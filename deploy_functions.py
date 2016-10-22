@@ -13,7 +13,7 @@ def deployApplication(oldName, newName, targets, package, plan=None):
 
   if isinstance(targets, list):
     print '- Deploying: ' + newName + ' to: [' + ', '.join(targets) + ']'
-  else
+  else:
     print '- Deploying: ' + newName + ' to: ' + targets
 
   progress = deploy(appName=newName, path=package, targets=targets, planPath=plan)
