@@ -1,19 +1,22 @@
 
-def undeployApplication(name)
+def undeployApplication(name):
   print 'Stopping and undeploying ' + name
-  progress = stopApplication(name)i
+  progress = stopApplication(name)
   progress.printStatus()
   progress = undeploy(name)
   progress.printStatus()
 
 
-def deployApplication(oldName, newName, servers, package, plan=None)
+def deployApplication(oldName, newName, targets, package, plan=None):
   if oldName:
     undeployApplication(oldName)
 
-  appServers = servers.join(',')
-  print 'Deploying ' + newName + ' to: ' + appServers
-  progress = deploy(appName=newName, path=package, targets=appServers, planPath=plan)
+  if isinstance(targets, list):
+    print '- Deploying: ' + newName + ' to: [' + ', '.join(targets) + ']'
+  else
+    print '- Deploying: ' + newName + ' to: ' + targets
+
+  progress = deploy(appName=newName, path=package, targets=targets, planPath=plan)
   progress.printStatus()
   #print 'Starting ' + newName
   #progress = startApplication(newName)

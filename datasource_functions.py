@@ -1,11 +1,12 @@
-def createJDBCDataSource(name, jndi, target, driverClass, url, username, password, initialCapacity=1, minCapacity=1, maxCapacity=5):
+def createJDBCDataSource(name, jndi, targets, driverClass, url, username, password, initialCapacity=1, minCapacity=1, maxCapacity=5):
   cd('/')
   jdbcSysRes = cmo.lookupJDBCSystemResource(name) 
   if jdbcSysRes is None:
+    print ' - Creating jdbc system resource ' + name + '.'
     jdbcSysRes = cmo.createJDBCSystemResource(name)
     jdbcRes = jdbcSysRes.getJDBCResource()
     jdbcRes.setName(name)
-    dataSourceParms = jdbcRes.getJDBCDataSourceParams()
+    dataSourceParams = jdbcRes.getJDBCDataSourceParams()
     dataSourceParams.addJNDIName(jndi)
     driverParams = jdbcRes.getJDBCDriverParams()  
     driverParams.setUrl(url)
@@ -19,7 +20,11 @@ def createJDBCDataSource(name, jndi, target, driverClass, url, username, passwor
     props = driverParams.getProperties()
     userProp = props.createProperty('user')
     userProp.setValue(username)
-    jdbcSysRes.addTarget(target)
+    for target in targets:
+      if not target is None:
+        jdbcSysRes.addTarget(target)
+      else:
+        print ' -- Could not set target.'
   else:
     print ' - jdbc system resource ' + name + ' already exists and will not be configured.'
 
