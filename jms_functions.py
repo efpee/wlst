@@ -11,14 +11,21 @@ def createJMSServer(jmsServerName, managedServer):
     #jmsServer.setBytesMaximum(200000000)
     target = getMBean('/Servers/' + managedServer)
     jmsServer.addTarget(target)
-    fileStore = create(jmsServerName + '-FileStore', 'FileStore')
-    fileStore.setDirectory(DOMAIN_DIR + 'FileStore-' + jmsServerName)
+    fileStore = getFileStore(jmsServerName + '-FileStore')
     fileStore.addTarget(target)
     jmsServer.setPersistentStore(fileStore)
   else:
     print "JMS Server with name '" + jmsServerName + "' already exists"
     print "Skipping configuration"
   return jmsServer
+  
+def getFileStore(name):
+  fileStore = cmo.lookupFileStore(name)
+  if fileStore == None:
+    print '-- Creating filestore ' + name
+    fileStore = create(name, 'FileStore')
+    fileStore.setDirectory(DOMAIN_DIR + name)
+  return fileStore
   
 # targetName can be either a ManagedServer or a Cluster
 def createJMSModule(jmsModuleName, subDeploymentName, targetName, jmsServers):
