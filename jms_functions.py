@@ -74,14 +74,14 @@ def createUniformDistributedQueue(jmsResource, queueName, queueJNDI, subDeployme
     jmsQueue.getDeliveryParamsOverrides().setTimeToLive(timeToLive)
   return jmsQueue
 
-def configUniformDistributedQueueErrorHandling(queueName, errorQueueName, redeliveries):
+def configUniformDistributedQueueErrorHandling(queueName, errorQueueName, redeliveries=2, redeliveryDelay=1000):
   print "Setting error queue for " + queueName + " to " + errorQueueName
   queue = jmsResource.lookupUniformDistributedQueue(queueName)
   if errorQueueName:
     errorQueue = jmsResource.lookupUniformDistributedQueue(errorQueueName)
     queue.getDeliveryFailureParams().setErrorDestination(errorQueue)
     queue.getDeliveryFailureParams().setExpirationPolicy('Redirect');
-  queue.getDeliveryParamsOverrides().setRedeliveryDelay(1000)
+  queue.getDeliveryParamsOverrides().setRedeliveryDelay(redeliveryDelay)
   queue.getDeliveryFailureParams().setRedeliveryLimit(redeliveries)
 
 def createUniformDistributedTopic(jmsResource, topicName, topicJndi, subDeploymentName, timeToLive=-1):
