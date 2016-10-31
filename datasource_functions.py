@@ -1,4 +1,4 @@
-def createJDBCDataSource(name, jndi, targets, driverClass, url, username, password, initialCapacity=1, minCapacity=1, maxCapacity=5):
+def createJDBCDataSource(name, jndi, targets, driverClass, url, username, password):
   cd('/')
   jdbcSysRes = cmo.lookupJDBCSystemResource(name) 
   if jdbcSysRes is None:
@@ -12,11 +12,6 @@ def createJDBCDataSource(name, jndi, targets, driverClass, url, username, passwo
     driverParams.setUrl(url)
     driverParams.setDriverName(driverClass)
     driverParams.setPassword(password)
-    connPoolParams = jdbcRes.getJDBCConnectionPoolParams()
-    connPoolParams.setTestTableName('select * from dual')
-    connPoolParams.setInitialCapacity(initialCapacity)
-    connPoolParams.setMinCapacity(minCapacity)    
-    connPoolParams.setMaxCapacity(maxCapacity)
     props = driverParams.getProperties()
     userProp = props.createProperty('user')
     userProp.setValue(username)
@@ -25,6 +20,31 @@ def createJDBCDataSource(name, jndi, targets, driverClass, url, username, passwo
         jdbcSysRes.addTarget(target)
       else:
         print ' -- Could not set target.'
+    return jdbcRes
   else:
     print ' - jdbc system resource ' + name + ' already exists and will not be configured.'
+    return None
 
+def configureConnectionPool(jdbcRes, initialCapacity=1, minCapacity=1, maxCapacity=5, secondsToTrustAnIdlePoolConnection=0, connectionCreationRetryFrequencySeconds=10)   
+  if not jdbcRes is None:
+    print '-- Configuring connection pool for ' + jbcRes.getName()
+    connPoolParams = jdbcRes.getJDBCConnectionPoolParams()
+    connPoolParams.setTestTableName('select * from dual')
+    connPoolParams.setInitialCapacity(initialCapacity)
+    connPoolParams.setMinCapacity(minCapacity)    
+    connPoolParams.setMaxCapacity(maxCapacity)
+    connPoolParams.setSecondsToTrustAnIdlePoolConnection(secondsToTrustAnIdlePoolConnection)
+    connPoolParams.setConnectionCreationRetryFrequencySeconds(connectionCreationRetryFrequencySeconds)
+
+  else:  
+    print '-- Warning: No jdbc resource to configure grid link settings'   
+ 
+def configureGridLinkDataSource(jdbcRes, nodeList, fanEnabled = true):
+  if not jdbcRes is None:
+    print '-- Configuring grid link data source for ' + jbcRes.getName()
+    oracleJdbcParams = jdbcRes.getJDBCOracleParams()
+    nodes = ','.join(nodeList)
+    oracleJdbcParams.setOnsNodeList(nodes)
+    oracleJdbcParams.setFanEnabled(fanEnabled)
+  else:
+    print '-- Warning: No jdbc resource to configure grid link settings'  
